@@ -48,6 +48,7 @@ class draw_page(object):
         template = split_file_name[2]
         photo = split_file_name[3]
         number = split_file_name[4]
+        cost = split_file_name[8]
         if "[" in number:
             number = number[1:-1]
         parameters = ("Вид: " + species + "\n" +
@@ -63,6 +64,7 @@ class draw_page(object):
             self.draw_preview_with_price(cell, parameters, cost, id_client, last_name)
         else:
             self.draw_preview_without_price(cell, parameters)
+            self.draw_cost(cell, cost, False)
 
     def draw_preview_without_price(self, cell, parameters):
         self.change_font(self.font_regular, font_size=45)
@@ -151,12 +153,19 @@ class draw_page(object):
         self.draw.text(dict_xy_inn[cell_number], text_inn, font=self.font, fill=(255, 0, 0))
         self.draw.text(dict_xy_order_number[cell_number], order_number, font=self.font, fill=(255, 0, 0))
 
-    def draw_cost(self, cell, cost):
-        dict_x_yid_nmbr = {1: (73, 1802),
-                        2: (1223, 1802),
-                        3: (73, 3328),
-                        4: (1223, 3328)
-                        }
+    def draw_cost(self, cell, cost, with_id):
+        if with_id:
+            dict_x_yid_nmbr = {1: (73, 1802),
+                               2: (1223, 1802),
+                               3: (73, 3328),
+                               4: (1223, 3328)
+                              }
+        else:
+            dict_x_yid_nmbr = {1: (120, 1800),
+                               2: (1270, 1800),
+                               3: (120, 3328),
+                               4: (1270, 3328)
+                               }
         cost_txt = "Сумма: " + cost
         self.draw.text(dict_x_yid_nmbr[cell], cost_txt, font=self.font, fill=(255, 0, 0))
 
