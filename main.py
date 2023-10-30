@@ -1,4 +1,6 @@
 import json
+import os.path
+import sys
 from re import compile as re_compile
 from sys import argv
 from PyQt5 import QtWidgets
@@ -81,12 +83,24 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.settings['font_italic'] = '{0}{1}Font{2}afuturicaitalic.ttf'.format(path.abspath(path.dirname(__file__)),
         #                                                                          sep, sep)
 
-        self.settings['font_regular'] = '{0}{1}Font{2}afuturica.ttf'.format(getcwd(),
-                                                                            sep, sep)
-        self.settings['font_bold'] = '{0}{1}Font{2}afuturicaextrabold.ttf'.format(getcwd(),
-                                                                                  sep, sep)
-        self.settings['font_italic'] = '{0}{1}Font{2}afuturicaitalic.ttf'.format(getcwd(),
-                                                                                 sep, sep)
+        # self.settings['font_regular'] = '{0}{1}Font{2}afuturica.ttf'.format(getcwd(),
+        #                                                                     sep, sep)
+        # self.settings['font_bold'] = '{0}{1}Font{2}afuturicaextrabold.ttf'.format(getcwd(),
+        #                                                                           sep, sep)
+        # self.settings['font_italic'] = '{0}{1}Font{2}afuturicaitalic.ttf'.format(getcwd(),
+        #                                                                          sep, sep)
+        self.settings['font_regular'] = '{0}{1}{2}{3}afuturica.ttf'.format(os.path.expandvars(r'%LOCALAPPDATA%'),
+                                                                        sep +'Microsoft',
+                                                                        sep + 'Windows',
+                                                                        sep + 'Fonts' + sep)
+        self.settings['font_bold'] = '{0}{1}{2}{3}afuturicaextrabold.ttf'.format(os.path.expandvars(r'%LOCALAPPDATA%'),
+                                                                        sep +'Microsoft',
+                                                                        sep + 'Windows',
+                                                                        sep + 'Fonts' + sep)
+        self.settings['font_italic'] = '{0}{1}{2}{3}afuturicaitalic.ttf'.format(os.path.expandvars(r'%LOCALAPPDATA%'),
+                                                                        sep +'Microsoft',
+                                                                        sep + 'Windows',
+                                                                        sep + 'Fonts' + sep)
 
         self.settings_directory = path.expanduser("~") + sep + "Previewer2.0" + sep
         self.set_default_settings()
