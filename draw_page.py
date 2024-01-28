@@ -91,14 +91,14 @@ class draw_page(object):
     def draw_title(self):
         self.change_font(self.font_regular, font_size=35)
         self.draw.text((60, 30), "класс/группа", font=self.font, fill=0)
-        font_width = self.font.getsize("Наименование Объекта")[0]
+        font_width = self.font.getlength("Наименование Объекта")
         self.draw.text((self.page.width / 2 - font_width / 2, 30),
                        "Наименование Объекта", font=self.font, fill=0)
 
     def draw_name_object(self, nameObject="Без имени"):
         # В методе выводим название объекта
         self.change_font(self.font_bold, font_size=70)
-        font_width = self.font.getsize(nameObject)[0]
+        font_width = self.font.getlength(nameObject)
         self.draw.text((self.page.width / 2 - font_width / 2, 100),
                        nameObject, font=self.font, fill=0)
 

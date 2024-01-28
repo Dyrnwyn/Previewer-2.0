@@ -47,7 +47,7 @@
    <property name="locale">
     <locale language="Russian" country="Russia"/>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <layout class="QVBoxLayout" name="verticalLayout_7">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
@@ -81,7 +81,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_previewer">
        <property name="sizePolicy">
@@ -305,15 +305,15 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="page">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>270</width>
-             <height>191</height>
+             <width>460</width>
+             <height>181</height>
             </rect>
            </property>
            <attribute name="label">
@@ -322,6 +322,15 @@
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
              <layout class="QGridLayout" name="gridLayout">
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>6</number>
+              </property>
               <item row="5" column="0">
                <widget class="QSpinBox" name="spinBox_id">
                 <property name="sizePolicy">
@@ -333,13 +342,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>30</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>75</width>
-                  <height>30</height>
+                  <height>24</height>
                  </size>
                 </property>
                </widget>
@@ -355,13 +364,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>30</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>75</width>
-                  <height>30</height>
+                  <height>24</height>
                  </size>
                 </property>
                </widget>
@@ -377,13 +386,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>30</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>75</width>
-                  <height>30</height>
+                  <height>24</height>
                  </size>
                 </property>
                </widget>
@@ -399,13 +408,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>30</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>75</width>
-                  <height>30</height>
+                  <height>24</height>
                  </size>
                 </property>
                </widget>
@@ -459,13 +468,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>30</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>75</width>
-                  <height>30</height>
+                  <height>24</height>
                  </size>
                 </property>
                </widget>
@@ -481,13 +490,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>30</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>75</width>
-                  <height>30</height>
+                  <height>24</height>
                  </size>
                 </property>
                </widget>
@@ -503,13 +512,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>30</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>75</width>
-                  <height>30</height>
+                  <height>24</height>
                  </size>
                 </property>
                </widget>
@@ -620,13 +629,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>30</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
                   <width>75</width>
-                  <height>30</height>
+                  <height>24</height>
                  </size>
                 </property>
                </widget>
@@ -659,8 +668,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>468</width>
-             <height>200</height>
+             <width>460</width>
+             <height>181</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -692,8 +701,11 @@
                 </property>
                 <property name="html">
                  <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: &quot;\2610&quot;; }
+li.checked::marker { content: &quot;\2612&quot;; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Cantarell'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -749,6 +761,108 @@ p, li { white-space: pre-wrap; }
                  </spacer>
                 </item>
                </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_font">
+           <attribute name="label">
+            <string>Настройки шрифтов</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_13">
+                <property name="text">
+                 <string>Regular</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_RegularFont"/>
+              </item>
+              <item>
+               <widget class="QToolButton" name="toolButton_RegularFont">
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Bold</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>14</width>
+                  <height>17</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_BoldFont"/>
+              </item>
+              <item>
+               <widget class="QToolButton" name="toolButton_BoldFont">
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Italic</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>14</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_ItalicFont"/>
+              </item>
+              <item>
+               <widget class="QToolButton" name="toolButton_ItalicFont">
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>

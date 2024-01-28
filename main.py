@@ -1,6 +1,6 @@
 import json
 import os.path
-import sys
+import platform
 from re import compile as re_compile
 from sys import argv
 from PyQt5 import QtWidgets
@@ -23,6 +23,14 @@ def get_file_list_in_path_used_re_template(path_for_search, template):
 
 
 class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
+    font_path = ""
+    if platform.system() == "Linux":
+        font_path = '{0}{1}Font{2}'.format(getcwd(), sep, sep)
+    elif platform.system() == "Windows":
+        font_path = '{0}{1}{2}{3}'.format(os.path.expandvars(r'%LOCALAPPDATA%'), sep +'Microsoft',
+                                                                                       sep + 'Windows',
+                                                                                       sep + 'Fonts' + sep)
+    settings_directory = path.expanduser("~") + sep + "Previewer2.0" + sep
     settings = {
         'species': 0,
         'format': 1,
@@ -37,9 +45,9 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         'with_price': False,
         'path': '',
         'object_name': '',
-        'font_regular': '',
-        'font_bold': '',
-        'font_italic': '',
+        'font_regular': font_path + 'afuturica.ttf',
+        'font_bold': font_path + 'afuturicaextrabold.ttf',
+        'font_italic': font_path + 'afuturicaitalic.ttf',
         'psd_files': [],
         'holst_files': [],
         'holst_files_subdir': 'renamed_files',
@@ -67,6 +75,9 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_compose.clicked.connect(self.compose_preview)
 
         self.pushButton_save_settings.clicked.connect(self.save_settings)
+        self.toolButton_RegularFont.clicked.connect(self.toolButton_regular_select_file)
+        self.toolButton_BoldFont.clicked.connect(self.toolButton_bold_select_file)
+        self.toolButton_ItalicFont.clicked.connect(self.toolButton_italic_select_file)
 
         self.previewer_thread = Previewer()
         self.previewer_thread.started.connect(self.on_start_previewer)
@@ -76,39 +87,14 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.previewer_thread.progress_bar_maximum.connect(self.on_change_maximum_pg, Qt.QueuedConnection)
         self.previewer_thread.missed_files.connect(self.on_change_missed_files)
 
-        # self.settings['font_regular'] = '{0}{1}Font{2}afuturica.ttf'.format(path.abspath(path.dirname(__file__)),
-        #                                                                     sep, sep)
-        # self.settings['font_bold'] = '{0}{1}Font{2}afuturicaextrabold.ttf'.format(path.abspath(path.dirname(__file__)),
-        #                                                                           sep, sep)
-        # self.settings['font_italic'] = '{0}{1}Font{2}afuturicaitalic.ttf'.format(path.abspath(path.dirname(__file__)),
-        #                                                                          sep, sep)
-
-        # self.settings['font_regular'] = '{0}{1}Font{2}afuturica.ttf'.format(getcwd(),
-        #                                                                     sep, sep)
-        # self.settings['font_bold'] = '{0}{1}Font{2}afuturicaextrabold.ttf'.format(getcwd(),
-        #                                                                           sep, sep)
-        # self.settings['font_italic'] = '{0}{1}Font{2}afuturicaitalic.ttf'.format(getcwd(),
-        #                                                                          sep, sep)
-        self.settings['font_regular'] = '{0}{1}{2}{3}afuturica.ttf'.format(os.path.expandvars(r'%LOCALAPPDATA%'),
-                                                                        sep +'Microsoft',
-                                                                        sep + 'Windows',
-                                                                        sep + 'Fonts' + sep)
-        self.settings['font_bold'] = '{0}{1}{2}{3}afuturicaextrabold.ttf'.format(os.path.expandvars(r'%LOCALAPPDATA%'),
-                                                                        sep +'Microsoft',
-                                                                        sep + 'Windows',
-                                                                        sep + 'Fonts' + sep)
-        self.settings['font_italic'] = '{0}{1}{2}{3}afuturicaitalic.ttf'.format(os.path.expandvars(r'%LOCALAPPDATA%'),
-                                                                        sep +'Microsoft',
-                                                                        sep + 'Windows',
-                                                                        sep + 'Fonts' + sep)
-
-        self.settings_directory = path.expanduser("~") + sep + "Previewer2.0" + sep
-        self.set_default_settings()
         if not path.exists(self.settings_directory + sep + 'settings.conf'):
+            self.set_default_settings_on_form()
             if not path.exists(self.settings_directory):
                 mkdir(self.settings_directory)
             self.save_settings()
-        self.load_settings()
+        else:
+            self.load_settings()
+
     @staticmethod
     def show_message_box(title_text, message_text):
         msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning,
@@ -243,18 +229,16 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def rename_files_from_order_file(self, data_from_exel):
         self.create_holst_subdir()
-        not_exist_photo = []
+        holst_files = []
         file_list = get_file_list_in_path_used_re_template(self.settings["path"], r'.*\.jp.*')
         for row in data_from_exel:
             if row['photo'] == '':
                 continue
-
             i = 0
-            photo_exist = False
-            compare_pattern = re_compile(row["photo"] + "\.jp.*")
-            holst_files = []
+            compare_pattern = re_compile(row["photo"] + r'\.jp.*')
+            row_foto_finded = False
             while i < len(file_list):
-                if compare_pattern.fullmatch(file_list[i]):
+                if not row_foto_finded and compare_pattern.fullmatch(file_list[i]):
                     new_file_name = 'п_' + row['format'] + '_0000_' + str(row['photo']) + '_' \
                                     + str(row['number']) + '_' + str(row['class']) + '_V_id_' \
                                     + str(row['order_summ']) + '_' + str(row['second_name']) + '_V.jpg'
@@ -262,11 +246,10 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                                                                                    self.settings['holst_files_subdir'],
                                                                                    new_file_name))
                     holst_files.append(new_file_name)
-                    photo_exist = True
+                    row_foto_finded = True
                 i += 1
-                if not photo_exist:
-                    not_exist_photo.append(row['photo'])
-            self.settings['holst_files'] = holst_files
+
+        self.settings['holst_files'] = holst_files
 
     def prepare_files_for_holst_preview(self):
         xls_files = get_file_list_in_path_used_re_template(self.settings['path'], r'.*\.xls.*')
@@ -301,17 +284,8 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
             self.show_message_box("Ошибка", message_text.format(files))
         return True
 
-    def set_default_settings(self):
-        self.spinBox_summ.setValue(self.settings['species'])
-        self.spinBox_format.setValue(self.settings['format'])
-        self.spinBox_template.setValue(self.settings['template'])
-        self.spinBox_photo.setValue(self.settings['photo'])
-        self.spinBox_number.setValue(self.settings['number'])
-        self.spinBox_class.setValue(self.settings['class'])
-        self.spinBox_id.setValue(self.settings['id'])
-        self.spinBox_summ.setValue(self.settings['summ'])
-        self.textEdit_qr_text.setText(self.settings['text_for_qr'])
-        self.comboBox_error_correction_level.setCurrentIndex(self.settings['qr_error_correct']['index'])
+    def set_default_settings_on_form(self):
+        self.set_settings_on_form()
 
     def get_settings_from_form(self):
         self.settings['species'] = self.spinBox_species.value()
@@ -325,6 +299,9 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settings['text_for_qr'] = self.textEdit_qr_text.toPlainText()
         self.settings['qr_error_correct']['index'] = self.comboBox_error_correction_level.currentIndex()
         self.settings['qr_error_correct']['text'] = self.comboBox_error_correction_level.currentText()
+        self.settings['font_regular'] = self.lineEdit_RegularFont.text()
+        self.settings['font_bold'] = self.lineEdit_BoldFont.text()
+        self.settings['font_italic'] = self.lineEdit_ItalicFont.text()
 
     def set_settings_on_form(self):
         self.spinBox_summ.setValue(self.settings['species'])
@@ -337,6 +314,9 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.spinBox_summ.setValue(self.settings['summ'])
         self.textEdit_qr_text.setText(self.settings['text_for_qr'])
         self.comboBox_error_correction_level.setCurrentIndex(self.settings['qr_error_correct']['index'])
+        self.lineEdit_RegularFont.setText(self.settings['font_regular'])
+        self.lineEdit_BoldFont.setText(self.settings['font_bold'])
+        self.lineEdit_ItalicFont.setText(self.settings['font_italic'])
 
     def save_settings(self):
         self.get_settings_from_form()
@@ -344,6 +324,23 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         settings_file = open(self.settings_directory + 'settings.conf', 'w')
         settings_file.write(json_txt)
         settings_file.close()
+
+    def toolButton_regular_select_file(self):
+        self.select_file(self.lineEdit_RegularFont, "Выберите файл шрифта 'Regular'")
+
+    def toolButton_bold_select_file(self):
+        self.select_file(self.lineEdit_BoldFont, "Выберите файл шрифта 'Bold'")
+
+    def toolButton_italic_select_file(self):
+        self.select_file(self.lineEdit_ItalicFont, "Выберите файл шрифта 'Italic'")
+
+    def select_file(self, line_edit, caption_text="Выберите файл шрифта"):
+        selected_file = QtWidgets.QFileDialog.getOpenFileName(self.window(), caption=caption_text,
+                                                              filter='Fonts(ttf) (*.ttf)',
+                                                              initialFilter='Fonts(ttf) (*.ttf)')
+        if not selected_file[0] == '':
+            line_edit.setText(selected_file[0])
+
 
     def load_settings(self):
         if not path.isfile(self.settings_directory + 'settings.conf'):
