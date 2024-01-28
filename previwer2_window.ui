@@ -81,7 +81,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_previewer">
        <property name="sizePolicy">
@@ -312,8 +312,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>460</width>
-             <height>181</height>
+             <width>258</width>
+             <height>164</height>
             </rect>
            </property>
            <attribute name="label">
@@ -668,8 +668,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>460</width>
-             <height>181</height>
+             <width>321</width>
+             <height>148</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -767,6 +767,14 @@ li.checked::marker { content: &quot;\2612&quot;; }
            </layout>
           </widget>
           <widget class="QWidget" name="page_font">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>460</width>
+             <height>181</height>
+            </rect>
+           </property>
            <attribute name="label">
             <string>Настройки шрифтов</string>
            </attribute>
