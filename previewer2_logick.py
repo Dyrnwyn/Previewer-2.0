@@ -46,14 +46,6 @@ class Previewer(QThread):
                     files_list.append(file.name)
         return files_list
 
-    # def search_psd_file_for_convert_in_object_path(self):
-    #     self.what_in_work.emit("Ищу psd файлы в папке объекта")
-    #     with scandir(self.settings['path']) as file_list:
-    #         for file in file_list:
-    #             if not file.name.startswith('.') and file.is_file() and \
-    #                     findall(r"^.*\." + "psd" + "*", file.name):
-    #                 self.psd_files_for_convert.append(file.name)
-
     def convert_psd(self):
         # Конвертируем psd файлы, конвертируем его в RGB и ресайзим
         # до размера 900 px

@@ -54,7 +54,8 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         'text_for_qr': """ST00012|Name=ООО «Объемный мир»|PersonalAcc=40702810631000007404
                           |BankName=ПАОСБЕРБАНК|BIC=040407627|CorrespAcc=30101810800000000627
                           |PayeeINN=2464105021|KPP=246001001|PersAcc={id}|Sum={summ}""",
-        'qr_error_correct': {'index': 3, 'text': '30%'}
+        'qr_error_correct': {'index': 3, 'text': '30%'},
+        'bottom_text': "vk.com/omfoto_ru\nОбъемныйМир.рф/parents"
     }
 
     def __init__(self):
@@ -302,6 +303,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settings['font_regular'] = self.lineEdit_RegularFont.text()
         self.settings['font_bold'] = self.lineEdit_BoldFont.text()
         self.settings['font_italic'] = self.lineEdit_ItalicFont.text()
+        self.settings['bottom_text'] = self.textEdit_bottom_text.toPlainText()
 
     def set_settings_on_form(self):
         self.spinBox_summ.setValue(self.settings['species'])
@@ -317,6 +319,7 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.lineEdit_RegularFont.setText(self.settings['font_regular'])
         self.lineEdit_BoldFont.setText(self.settings['font_bold'])
         self.lineEdit_ItalicFont.setText(self.settings['font_italic'])
+        self.textEdit_bottom_text.setText(self.settings['bottom_text'])
 
     def save_settings(self):
         self.get_settings_from_form()

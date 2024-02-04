@@ -47,7 +47,7 @@
    <property name="locale">
     <locale language="Russian" country="Russia"/>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_7">
+   <layout class="QHBoxLayout" name="horizontalLayout_7">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
@@ -305,14 +305,14 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>3</number>
           </property>
-          <widget class="QWidget" name="page">
+          <widget class="QWidget" name="page_data_position">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>258</width>
+             <width>446</width>
              <height>164</height>
             </rect>
            </property>
@@ -663,13 +663,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="page_2">
+          <widget class="QWidget" name="page_qr">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>321</width>
-             <height>148</height>
+             <width>460</width>
+             <height>149</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -772,7 +772,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
              <x>0</x>
              <y>0</y>
              <width>460</width>
-             <height>181</height>
+             <height>149</height>
             </rect>
            </property>
            <attribute name="label">
@@ -873,6 +873,16 @@ li.checked::marker { content: &quot;\2612&quot;; }
                </widget>
               </item>
              </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_bottom_text">
+           <attribute name="label">
+            <string>Текст снизу</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QTextEdit" name="textEdit_bottom_text"/>
             </item>
            </layout>
           </widget>

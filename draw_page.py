@@ -1,7 +1,30 @@
 import qrcode
+import positions
 from PIL import Image, ImageDraw, ImageFont
 from os import sep
+
 import logging
+
+
+def get_species_from_filename(splited_filename):
+    species = None
+    if splited_filename[0] == "о":
+        species = "объемная"
+    elif splited_filename[0] == "п":
+        species = "плоская"
+    else:
+        species = " "
+    return species
+
+
+def get_proportion_from_filename(splited_filename):
+    proportions = splited_filename[1]
+    if "Кружка" in proportions:
+        proportions = "Кружка-термос"
+    if ("Настенный кален" in proportions):
+        proportions = "Настенный к."
+    return proportions
+
 
 class draw_page(object):
     """docstring for draw_page"""
@@ -33,55 +56,40 @@ class draw_page(object):
 
     def draw_information_of_photo(self, cell, file_name, settings, image):
         self.add_img(cell, image, settings)
-        split_file_name = file_name.split("_")
-        if split_file_name[0] == "о":
-            species = "объемная"
-        elif split_file_name[0] == "п":
-            species = "плоская"
-        else:
-            species = " "
-        proportions = split_file_name[1]
-        if "Кружка" in proportions:
-            proportions = "Кружка-термос"
-        if ("Настенный кален" in proportions):
-            proportions = "Настенный к."
-        template = split_file_name[2]
-        photo = split_file_name[3]
-        number = split_file_name[4]
-        cost = split_file_name[8]
+        splited_filename = file_name.split("_")
+        species = get_species_from_filename(splited_filename)
+        proportions = get_proportion_from_filename(splited_filename)
+        template = splited_filename[2]
+        photo = splited_filename[3]
+        number = splited_filename[4]
         if "[" in number:
             number = number[1:-1]
         parameters = ("Вид: " + species + "\n" +
-                     "Размер: " + proportions + "\n" +
-                     "Шаблон: " + template + "\n" +
-                     "Фото: " + photo + "\n" +
-                     "Кол-во:" + number + "\n"
-                     )
+                      "Размер: " + proportions + "\n" +
+                      "Шаблон: " + template + "\n" +
+                      "Фото: " + photo + "\n" +
+                      "Кол-во:" + number + "\n"
+                      )
         if settings['with_price']:
-            cost = split_file_name[12].split(".")[0]
-            id_client = split_file_name[11]
-            last_name = split_file_name[9]
+            cost = splited_filename[len(splited_filename) - 1].split(".")[0]
+            id_client = splited_filename[11]
+            last_name = splited_filename[9]
             self.draw_preview_with_price(cell, parameters, cost, id_client, last_name)
         else:
-            self.draw_preview_without_price(cell, parameters)
-            self.draw_cost(cell, cost, False)
+            cost = splited_filename[8]
+            self.draw_preview_without_price(cell, parameters, settings, cost)
 
-    def draw_preview_without_price(self, cell, parameters):
+
+    def draw_preview_without_price(self, cell, parameters, settings, cost):
         self.change_font(self.font_regular, font_size=45)
-        dict_xy = {1: (120, 1525),
-                   2: (1270, 1525),
-                   3: (120, 3075),
-                   4: (1270, 3075)
-                   }
+        dict_xy = positions.text_without_price()
         self.draw.text(dict_xy[cell], parameters, font=self.font, fill=0)
+        self.draw_cost(cell, cost, False)
+        self.draw_bottom_text(cell, settings)
 
     def draw_preview_with_price(self, cell, parameters, cost, id_client, last_name):
         self.change_font(self.font_regular, font_size=25)
-        dict_xy = {1: (550, 1150),
-                   2: (1700, 1150),
-                   3: (550, 2650),
-                   4: (1700, 2650)
-                   }
+        dict_xy = positions.text_with_price()
         self.draw_id_information(cell, id_client)
         self.draw.text(dict_xy[cell], parameters, font=self.font, fill=(0, 0, 0))
         self.draw_sites(cell)
@@ -109,31 +117,15 @@ class draw_page(object):
 
     def draw_last_name(self, last_name, numb_cell):
         self.change_font(self.font_regular, font_size=40)
-        dict_xy = {1: (80, 400),
-                  2: (1220, 400),
-                  3: (80, 1925),
-                  4: (1220, 1925)
-                  }
+        dict_xy = positions.last_name()
         self.draw.text(dict_xy[numb_cell], last_name, font=self.font, fill=0)
 
     def draw_id_information(self, cell_number, id_client):
 
-        dict_xy_top = {1: (70, 1365),
-                       2: (1250, 1365),
-                       3: (70, 2915),
-                       4: (1250, 2915)}
-        dict_xy_main = {1: (70, 1470),
-                        2: (1250, 1470),
-                        3: (70, 3020),
-                        4: (1250, 3020)}
-        dict_xy_inn = {1: (150, 1540),
-                     2: (1325, 1540),
-                     3: (150, 3090),
-                     4: (1325, 3090)}
-        dict_xy_order_number = {1: (75, 1610),
-                             2: (1250, 1610),
-                             3: (75, 3160),
-                             4: (1250, 3160)}
+        dict_xy_top = positions.id_information_top()
+        dict_xy_main = positions.id_information_main()
+        dict_xy_inn = positions.id_information_inn()
+        dict_xy_order_number = positions.id_information_order_number()
         text_information_top = ("Через банкомат\n"
                                 "Сбербанка, Сбербанк\n"
                                 "онлайн:")
@@ -155,48 +147,31 @@ class draw_page(object):
 
     def draw_cost(self, cell, cost, with_id):
         if with_id:
-            dict_x_yid_nmbr = {1: (73, 1802),
-                               2: (1223, 1802),
-                               3: (73, 3328),
-                               4: (1223, 3328)
-                              }
+            dict_xy = positions.cost_with_id()
         else:
-            dict_x_yid_nmbr = {1: (120, 1800),
-                               2: (1270, 1800),
-                               3: (120, 3328),
-                               4: (1270, 3328)
-                               }
+            dict_xy = positions.cost_without_id()
         cost_txt = "Сумма: " + cost
-        self.draw.text(dict_x_yid_nmbr[cell], cost_txt, font=self.font, fill=(255, 0, 0))
+        self.draw.text(dict_xy[cell], cost_txt, font=self.font, fill=(255, 0, 0))
+
+    def draw_bottom_text(self, cell, settings):
+        dict_xy = positions.bottom_text_without_id()
+        self.draw.text(dict_xy[cell], settings['bottom_text'], font=self.font, fill=(0, 0, 255))
 
     def draw_sites(self, cell_number):
         self.change_font(self.font_regular, font_size=30)
-        dict_xy_thank = {1: (450, 1800),
-                         2: (1575, 1800),
-                         3: (450, 3330),
-                         4: (1575, 3330)}
+        dict_xy_thank = positions.thank_text()
         thank_text = ("Спасибо за заказ! Заходите к нам на сайт")
         self.draw.text(dict_xy_thank[cell_number], thank_text, font=self.font, fill=(0, 0, 0))
 
         self.change_font(font_name=self.font_bold, font_size=30)
-        dict_xy_site = {1: (325, 1850),
-                        2: (1475, 1850),
-                        3: (325, 3380),
-                        4: (1475, 3380)
-                  }
+        dict_xy_site = positions.site_text()
         sites = ("ОбъемныйМир.рф(вкладка меню ""Родителям"")")
         self.draw.text(dict_xy_site[cell_number], sites, font=self.font, fill=(25, 0, 200))
 
     def draw_text_pay_or_on_center_pager(self, cell):
         self.change_font(self.font_bold, font_size=40)
-        dict_xy_pay = {1: (550, 1350),
-                     2: (1700, 1350),
-                     3: (550, 2900),
-                     4: (1700, 2900)}
-        dict_xy_or = {1: (585, 1600),
-                    2: (1735, 1600),
-                    3: (585, 3100),
-                    4: (1735, 3100)}
+        dict_xy_pay = positions.text_pay()
+        dict_xy_or = positions.text_or()
         text_or = "ИЛИ"
         text_pay = "ОПЛАТА"
         self.draw.text(dict_xy_pay[cell], text_pay, font=self.font, fill=(0, 0, 0))
@@ -204,38 +179,26 @@ class draw_page(object):
 
     def add_img(self, cell, img, settings):
         # метод вывода фото изделия в ячейки
-        dict_xy = {1: (220, 475),
-                  2: (1370, 475),
-                  3: (220, 1975),
-                  4: (1370, 1975)
-                  }
+        dict_xy = positions.img()
         if img.height > img.width and settings['with_price']:
             img = img.transpose(method=Image.ROTATE_90)
         self.page.paste(img, dict_xy[cell])
 
     def add_qr(self, cell, summ, persacc):
         if persacc != '' or summ != '' or persacc != ' ' or summ != ' ':
-            self.add_text_over_qr(cell)
-            dictXY = {1: (800, 1400),
-                      2: (2000, 1400),
-                      3: (800, 2930),
-                      4: (2000, 2930)
-                      }
-            qr_image = qrcode.QRCode(version=1,
-                                     error_correction=qrcode.ERROR_CORRECT_H,
-                                     box_size=5,
-                                     border=1)
+            self.add_text_above_qr(cell)
+            dict_xy = positions.qr()
             summ = str(int(summ) * 100)
+            qr_image = qrcode.QRCode(version=1,
+                                          error_correction=qrcode.ERROR_CORRECT_H,
+                                          box_size=5,
+                                          border=1)
             qr_image.add_data("""ST00012|Name=ООО «Объемный мир»|PersonalAcc=40702810631000007404|BankName=ПАОСБЕРБАНК|BIC=040407627|CorrespAcc=30101810800000000627|PayeeINN=2464105021|KPP=246001001|PersAcc=""" + persacc + """|Sum=""" + summ)
-            self.page.paste(qr_image.make_image(fill_color="black", back_color="white"), dictXY[cell])
+            self.page.paste(qr_image.make_image(fill_color="black", back_color="white"), dict_xy[cell])
 
-    def add_text_over_qr(self, cell):
+    def add_text_above_qr(self, cell):
         self.change_font(self.font_regular, font_size=30)
-        dict_xy = {1: (825, 1320),
-                  2: (2025, 1320),
-                  3: (825, 2850),
-                  4: (2025, 2850)
-                  }
+        dict_xy = positions.text_above_qr()
         text_over_qr = "Через Сбербанк онлайн по \n" \
                        "QR-коду (быстрая оплата)"
         self.draw.text(dict_xy[cell], text_over_qr, font=self.font, fill=(0, 0, 0))
