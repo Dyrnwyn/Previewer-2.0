@@ -1,8 +1,8 @@
 import logging
 import draw_page
+from static_method import get_file_sizes, search_file_with_extension
 from PyQt5.QtCore import QThread, pyqtSignal
-from os import scandir, path, remove, sep
-from re import findall
+from os import path, remove, sep
 from psd_tools import PSDImage
 from PIL.Image import BICUBIC
 from PIL import Image
@@ -20,7 +20,6 @@ class Previewer(QThread):
     logging.basicConfig(filename='previewer.log', filemode='w', format='%(asctime)s - %(levelname)s: %(message)s',
                         level=logging.INFO)
 
-
     def __init__(self):
         QThread.__init__(self)
 
@@ -36,88 +35,71 @@ class Previewer(QThread):
 
     def set_var(self, settings):
         self.settings = settings
-    @staticmethod
-    def search_file_with_extension(file_extension, folder=""):
-        files_list = []
-        with scandir(folder) as file_list:
-            for file in file_list:
-                if not file.name.startswith('.') and file.is_file() and \
-                        findall(r"^.*\." + file_extension + "*", file.name):
-                    files_list.append(file.name)
-        return files_list
 
     def convert_psd(self):
-        # Конвертируем psd файлы, конвертируем его в RGB и ресайзим
-        # до размера 900 px
-        self.progress_bar_maximum.emit(len(self.settings['psd_files']))
-        self.progress_bar_percent.emit(0)
+        self.initialize_progress_bar(len(self.settings['psd_files']))
         count = 0
-        base_size = 900
         for psd_file_name in self.settings['psd_files']:
-            logging.info("Открываю файл: {0}".format(psd_file_name))
-            if path.exists(self.settings['path'] + sep + psd_file_name):
-                try:
-                    psd = PSDImage.open(self.settings['path'] + sep + psd_file_name)
-                except Exception:
-                    logging.error("Не удалось открыть файл: {0}".format(psd_file_name))
-                    self.missed_files.emit(self.missed_files_msg.format(psd_file_name))
-            else:
-                logging.error("Не удалось найти файл: {0}".format(psd_file_name))
-                self.missed_files.emit(self.missed_files_msg.format(psd_file_name))
+            abs_path = path.join(self.settings['path'], psd_file_name)
+            img_file = self.open_image_file(psd_file_name, abs_path, True)
+            if img_file is None:
                 continue
-            try:
-                self.what_in_work.emit("Конвертирую файл: {0}".format(psd_file_name))
-                rgb_png = psd.composite().convert("RGB")
-            except Exception as E:
-                logging.error("Не удалось конвертировать: {0}".format(psd_file_name))
-                self.missed_files.emit(self.missed_files_msg.format(psd_file_name))
-                continue
-            x, y = rgb_png.size
-            if x > y:
-                width = base_size
-                height = int(width / x * y)
-            elif y > x:
-                height = base_size
-                width = int(height / y * x)
-            else:
-                height = 590
-                width = 590
-            self.files_for_preview[psd_file_name[0:-4] + ".jpeg"] = rgb_png.resize((width, height), BICUBIC)
+            width, height = get_file_sizes(img_file)
+            self.files_for_preview[psd_file_name[0:-4] + ".jpeg"] = img_file.resize((width, height), BICUBIC)
             count += 1
-            self.progress_bar_percent.emit(count)
+            self.set_new_value_of_progress_bar(count)
 
     def convert_jpg(self):
-        # Конвертируем psd файлы, конвертируем его в RGB и ресайзим
-        # до размера 900 px
-        self.progress_bar_maximum.emit(len(self.settings['holst_files']))
-        self.progress_bar_percent.emit(0)
+        self.initialize_progress_bar(len(self.settings['holst_files']))
         count = 0
-        base_size = 900
         for jpg_file_name in self.settings['holst_files']:
-
-            self.what_in_work.emit("Конвертирую файл: {0}".format(jpg_file_name))
-            jpg_file_name_abs_path = path.join(self.settings['path'], self.settings['holst_files_subdir'],
-                                               jpg_file_name)
-            if path.exists(jpg_file_name_abs_path):
-                logging.info("Открываю файл: {0}".format(jpg_file_name))
-                jpg = Image.open(jpg_file_name_abs_path)
-            else:
-                logging.error("Не удалось открыть файл: {0}".format(jpg_file_name))
-                self.missed_files.emit(self.missed_files_msg.format(jpg_file_name))
+            abs_path = path.join(self.settings['path'], self.settings['holst_files_subdir'], jpg_file_name)
+            img_file = self.open_image_file(jpg_file_name, abs_path)
+            if img_file is None:
                 continue
-            x, y = jpg.size
-            if x > y:
-                width = base_size
-                height = int(width / x * y)
-            elif y > x:
-                height = base_size
-                width = int(height / y * x)
-            else:
-                height = 590
-                width = 590
-            self.files_for_preview[jpg_file_name[0:-4] + ".jpeg"] = jpg.resize((width, height), BICUBIC)
+            width, height = get_file_sizes(img_file)
+            self.files_for_preview[jpg_file_name[0:-4] + ".jpeg"] = img_file.resize((width, height), BICUBIC)
             count += 1
-            self.progress_bar_percent.emit(count)
+            self.set_new_value_of_progress_bar(count)
+
+    def open_image_file(self, img_file_name, abs_path, is_psd=False):
+        log_message = "Обрабатываю файл: {0}".format(img_file_name)
+        self.set_what_in_work(log_message)
+        logging.info(log_message)
+        if path.exists(abs_path):
+            try:
+                if is_psd:
+                    psd = PSDImage.open(abs_path)
+                else:
+                    img = Image.open(abs_path)
+                    return img
+            except Exception:
+                self.output_error("Не удалось открыть файл: {0}".format(img_file_name))
+                return None
+        else:
+            self.output_error("Не удалось найти файл: {0}".format(img_file_name))
+            return None
+        try:
+            # self.set_what_in_work("Конвертирую файл: {0}".format(img_file_name))
+            rgb_png = psd.composite().convert("RGB")
+            return rgb_png
+        except Exception as E:
+            self.output_error("Не удалось конвертировать: {0}".format(img_file_name))
+            return None
+
+    def set_new_value_of_progress_bar(self, new_value):
+        self.progress_bar_percent.emit(new_value)
+
+    def initialize_progress_bar(self, max_pb):
+        self.progress_bar_maximum.emit(max_pb)
+        self.progress_bar_percent.emit(0)
+
+    def set_what_in_work(self, message):
+        self.what_in_work.emit(message)
+
+    def output_error(self, message):
+        logging.error(message)
+        self.missed_files.emit(message)
 
     def sort_dictionary(self):
         logging.info("Сортирую полученные классы.")
@@ -171,9 +153,9 @@ class Previewer(QThread):
                         cell = 0
 
     def remove_old_pdf(self):
-        self.what_in_work.emit("Удаляю старое превью")
-        pdf_files = self.search_file_with_extension("pdf", self.settings['path'])
+        self.set_what_in_work("Удаляю старое превью")
+        pdf_files = search_file_with_extension("pdf", self.settings['path'])
         pdf_file_name = self.settings['object_name'] + ".pdf"
         if pdf_file_name in pdf_files:
             logging.info("Удаление старого превью: {0}{1}{2}".format(self.settings['path'], sep, pdf_file_name))
-            remove(self.settings['path'] + sep + pdf_file_name)
+            remove(path.join(self.settings['path'], pdf_file_name))

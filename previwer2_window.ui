@@ -281,6 +281,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_compose">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(248, 228, 92);</string>
+          </property>
           <property name="text">
            <string>Сформировать</string>
           </property>
@@ -305,15 +308,15 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_data_position">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>446</width>
-             <height>164</height>
+             <width>460</width>
+             <height>117</height>
             </rect>
            </property>
            <attribute name="label">
@@ -331,52 +334,27 @@
               <property name="verticalSpacing">
                <number>6</number>
               </property>
-              <item row="5" column="0">
-               <widget class="QSpinBox" name="spinBox_id">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_5">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
                 <property name="maximumSize">
                  <size>
-                  <width>75</width>
-                  <height>24</height>
+                  <width>95</width>
+                  <height>16777215</height>
                  </size>
+                </property>
+                <property name="text">
+                 <string>Вид изделия</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="2">
-               <widget class="QSpinBox" name="spinBox_class">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>75</width>
-                  <height>24</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QSpinBox" name="spinBox_summ">
+              <item row="1" column="2">
+               <widget class="QSpinBox" name="spinBox_template">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -419,8 +397,8 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="2">
-               <widget class="QLabel" name="label_7">
+              <item row="0" column="2">
+               <widget class="QLabel" name="label_3">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -434,26 +412,7 @@
                  </size>
                 </property>
                 <property name="text">
-                 <string>Класс</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_11">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>95</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Формат</string>
+                 <string>Шаблон</string>
                 </property>
                </widget>
               </item>
@@ -479,29 +438,45 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="2">
-               <widget class="QSpinBox" name="spinBox_template">
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_11">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>20</height>
-                 </size>
-                </property>
                 <property name="maximumSize">
                  <size>
-                  <width>75</width>
-                  <height>24</height>
+                  <width>95</width>
+                  <height>16777215</height>
                  </size>
+                </property>
+                <property name="text">
+                 <string>Формат</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
+              <item row="0" column="3">
+               <widget class="QLabel" name="label_6">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>95</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Фото</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
                <widget class="QSpinBox" name="spinBox_photo">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -524,63 +499,6 @@
                </widget>
               </item>
               <item row="2" column="0">
-               <widget class="QLabel" name="label_6">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>95</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Фото</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QLabel" name="label_8">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>95</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Цена</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_5">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>95</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Вид изделия</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
                <widget class="QLabel" name="label_10">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -599,26 +517,7 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="2">
-               <widget class="QLabel" name="label_3">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>95</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Шаблон</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
+              <item row="3" column="0">
                <widget class="QSpinBox" name="spinBox_number">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -640,7 +539,48 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
+              <item row="2" column="1">
+               <widget class="QLabel" name="label_7">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>95</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Класс</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QSpinBox" name="spinBox_class">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>24</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
                <widget class="QLabel" name="label_9">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -659,6 +599,69 @@
                 </property>
                </widget>
               </item>
+              <item row="3" column="2">
+               <widget class="QSpinBox" name="spinBox_id">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>24</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QLabel" name="label_8">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>95</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Цена</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QSpinBox" name="spinBox_summ">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>24</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -668,8 +671,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>460</width>
-             <height>149</height>
+             <width>321</width>
+             <height>148</height>
             </rect>
            </property>
            <property name="styleSheet">
@@ -771,8 +774,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>460</width>
-             <height>149</height>
+             <width>137</width>
+             <height>114</height>
             </rect>
            </property>
            <attribute name="label">
@@ -877,6 +880,14 @@ li.checked::marker { content: &quot;\2612&quot;; }
            </layout>
           </widget>
           <widget class="QWidget" name="page_bottom_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>460</width>
+             <height>117</height>
+            </rect>
+           </property>
            <attribute name="label">
             <string>Текст снизу</string>
            </attribute>
@@ -892,6 +903,16 @@ li.checked::marker { content: &quot;\2612&quot;; }
          <widget class="QPushButton" name="pushButton_save_settings">
           <property name="text">
            <string>Сохранить</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_remove_file_settings">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(237, 51, 59);</string>
+          </property>
+          <property name="text">
+           <string>По умолчанию</string>
           </property>
          </widget>
         </item>
@@ -914,11 +935,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <tabstop>spinBox_species</tabstop>
   <tabstop>spinBox_format</tabstop>
   <tabstop>spinBox_template</tabstop>
-  <tabstop>spinBox_photo</tabstop>
-  <tabstop>spinBox_number</tabstop>
-  <tabstop>spinBox_class</tabstop>
-  <tabstop>spinBox_id</tabstop>
-  <tabstop>spinBox_summ</tabstop>
   <tabstop>pushButton_save_settings</tabstop>
  </tabstops>
  <resources/>

@@ -2,6 +2,7 @@ import json
 import os.path
 import platform
 from re import compile as re_compile
+from static_method import get_file_list_in_path_used_re_template, show_message_box_with_question
 from sys import argv
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
@@ -10,16 +11,6 @@ from previewer2_main_window import Ui_MainWindow
 from previewer2_logick import Previewer
 from openpyxl import load_workbook
 from shutil import copy
-
-
-def get_file_list_in_path_used_re_template(path_for_search, template):
-    file_list = []
-    re_pattern = re_compile(template)
-    for file in scandir(path_for_search):
-        if not file.name.startswith('.') and file.is_file() and \
-                re_pattern.fullmatch(file.name):
-            file_list.append(file.name)
-    return file_list
 
 
 class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -75,10 +66,12 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.toolButton_choice_path.clicked.connect(self.set_path_and_object_name)
         self.pushButton_compose.clicked.connect(self.compose_preview)
 
+        self.pushButton_remove_file_settings.clicked.connect(self.set_default_settings)
+
         self.pushButton_save_settings.clicked.connect(self.save_settings)
-        self.toolButton_RegularFont.clicked.connect(self.toolButton_regular_select_file)
-        self.toolButton_BoldFont.clicked.connect(self.toolButton_bold_select_file)
-        self.toolButton_ItalicFont.clicked.connect(self.toolButton_italic_select_file)
+        self.toolButton_RegularFont.clicked.connect(self.tool_button_regular_select_file)
+        self.toolButton_BoldFont.clicked.connect(self.tool_button_bold_select_file)
+        self.toolButton_ItalicFont.clicked.connect(self.tool_button_italic_select_file)
 
         self.previewer_thread = Previewer()
         self.previewer_thread.started.connect(self.on_start_previewer)
@@ -89,12 +82,15 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         self.previewer_thread.missed_files.connect(self.on_change_missed_files)
 
         if not path.exists(self.settings_directory + sep + 'settings.conf'):
-            self.set_default_settings_on_form()
-            if not path.exists(self.settings_directory):
-                mkdir(self.settings_directory)
-            self.save_settings()
+            self.set_default_settings()
         else:
             self.load_settings()
+
+    def set_default_settings(self):
+        self.set_default_settings_on_form()
+        if not path.exists(self.settings_directory):
+            mkdir(self.settings_directory)
+        self.save_settings()
 
     @staticmethod
     def show_message_box(title_text, message_text):
@@ -103,19 +99,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                                         buttons=QtWidgets.QMessageBox.Ok)
 
         msg_box.exec_()
-
-    def show_message_box_with_question(self, title_text, message_text):
-        # continue_button = QtWidgets.QPushButton("Продолжить")
-        # abort_button = QtWidgets.QPushButton("Отмена")
-        # msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Question,
-        #                                 title_text, message_text,
-        #                                 buttons=QtWidgets.QMessageBox.Ignore | QtWidgets.QMessageBox.Abort)
-        msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Question,
-                                        title_text, message_text)
-        msg_box.addButton("&Отмена", QtWidgets.QDialogButtonBox.RejectRole)
-        msg_box.addButton("&Продолжить", QtWidgets.QDialogButtonBox.AcceptRole)
-        result = msg_box.exec_()
-        print(result)
 
     def check_font(self):
         fonts = [self.settings['font_regular'],
@@ -243,9 +226,8 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                     new_file_name = 'п_' + row['format'] + '_0000_' + str(row['photo']) + '_' \
                                     + str(row['number']) + '_' + str(row['class']) + '_V_id_' \
                                     + str(row['order_summ']) + '_' + str(row['second_name']) + '_V.jpg'
-                    copy(path.join(self.settings['path'], file_list[i]), path.join(self.settings['path'],
-                                                                                   self.settings['holst_files_subdir'],
-                                                                                   new_file_name))
+                    copy(path.join(self.settings["path"], file_list[i]),
+                         path.join(self.settings["path"], self.settings["holst_files_subdir"], new_file_name))
                     holst_files.append(new_file_name)
                     row_foto_finded = True
                 i += 1
@@ -328,13 +310,13 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
         settings_file.write(json_txt)
         settings_file.close()
 
-    def toolButton_regular_select_file(self):
+    def tool_button_regular_select_file(self):
         self.select_file(self.lineEdit_RegularFont, "Выберите файл шрифта 'Regular'")
 
-    def toolButton_bold_select_file(self):
+    def tool_button_bold_select_file(self):
         self.select_file(self.lineEdit_BoldFont, "Выберите файл шрифта 'Bold'")
 
-    def toolButton_italic_select_file(self):
+    def tool_button_italic_select_file(self):
         self.select_file(self.lineEdit_ItalicFont, "Выберите файл шрифта 'Italic'")
 
     def select_file(self, line_edit, caption_text="Выберите файл шрифта"):
@@ -343,7 +325,6 @@ class MainApp(QtWidgets.QMainWindow, Ui_MainWindow):
                                                               initialFilter='Fonts(ttf) (*.ttf)')
         if not selected_file[0] == '':
             line_edit.setText(selected_file[0])
-
 
     def load_settings(self):
         if not path.isfile(self.settings_directory + 'settings.conf'):

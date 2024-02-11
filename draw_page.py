@@ -2,29 +2,8 @@ import qrcode
 import positions
 from PIL import Image, ImageDraw, ImageFont
 from os import sep
-
-import logging
-
-
-def get_species_from_filename(splited_filename):
-    species = None
-    if splited_filename[0] == "о":
-        species = "объемная"
-    elif splited_filename[0] == "п":
-        species = "плоская"
-    else:
-        species = " "
-    return species
-
-
-def get_proportion_from_filename(splited_filename):
-    proportions = splited_filename[1]
-    if "Кружка" in proportions:
-        proportions = "Кружка-термос"
-    if ("Настенный кален" in proportions):
-        proportions = "Настенный к."
-    return proportions
-
+import texts
+from static_method import get_species_from_filename, get_proportion_from_filename
 
 class draw_page(object):
     """docstring for draw_page"""
@@ -79,7 +58,6 @@ class draw_page(object):
             cost = splited_filename[8]
             self.draw_preview_without_price(cell, parameters, settings, cost)
 
-
     def draw_preview_without_price(self, cell, parameters, settings, cost):
         self.change_font(self.font_regular, font_size=45)
         dict_xy = positions.text_without_price()
@@ -103,17 +81,17 @@ class draw_page(object):
         self.draw.text((self.page.width / 2 - font_width / 2, 30),
                        "Наименование Объекта", font=self.font, fill=0)
 
-    def draw_name_object(self, nameObject="Без имени"):
+    def draw_name_object(self, name_object="Без имени"):
         # В методе выводим название объекта
         self.change_font(self.font_bold, font_size=70)
-        font_width = self.font.getlength(nameObject)
+        font_width = self.font.getlength(name_object)
         self.draw.text((self.page.width / 2 - font_width / 2, 100),
-                       nameObject, font=self.font, fill=0)
+                       name_object, font=self.font, fill=0)
 
-    def draw_of_klass(self, nameKlass="00"):
+    def draw_of_klass(self, name_klass="00"):
         # Рисуем класс/группу
         self.change_font(self.font_regular, font_size=70)
-        self.draw.text((60, 100), nameKlass, font=self.font, fill=0)
+        self.draw.text((60, 100), name_klass, font=self.font, fill=0)
 
     def draw_last_name(self, last_name, numb_cell):
         self.change_font(self.font_regular, font_size=40)
@@ -121,22 +99,15 @@ class draw_page(object):
         self.draw.text(dict_xy[numb_cell], last_name, font=self.font, fill=0)
 
     def draw_id_information(self, cell_number, id_client):
-
         dict_xy_top = positions.id_information_top()
         dict_xy_main = positions.id_information_main()
         dict_xy_inn = positions.id_information_inn()
         dict_xy_order_number = positions.id_information_order_number()
-        text_information_top = ("Через банкомат\n"
-                                "Сбербанка, Сбербанк\n"
-                                "онлайн:")
-        text_information_main = ("1. Найдите нашу\n"
-                                 "организацию по\n"
-                                 "ИНН\n"
-                                 "2. Введите № заказа\n\n"
-                                 "3. Проверьте\n"
-                                 "правильность заказа и\n"
-                                 "произведите оплату")
-        text_inn = "2464105021"
+
+        text_information_top = texts.information_top()
+        text_information_main = texts.information_main()
+        text_inn = texts.inn()
+
         order_number = id_client
         self.change_font(self.font_bold, font_size=30)
         self.draw.text(dict_xy_top[cell_number], text_information_top, font=self.font, fill=0)
@@ -160,13 +131,13 @@ class draw_page(object):
     def draw_sites(self, cell_number):
         self.change_font(self.font_regular, font_size=30)
         dict_xy_thank = positions.thank_text()
-        thank_text = ("Спасибо за заказ! Заходите к нам на сайт")
+        thank_text = texts.thank_text()
         self.draw.text(dict_xy_thank[cell_number], thank_text, font=self.font, fill=(0, 0, 0))
 
         self.change_font(font_name=self.font_bold, font_size=30)
         dict_xy_site = positions.site_text()
-        sites = ("ОбъемныйМир.рф(вкладка меню ""Родителям"")")
-        self.draw.text(dict_xy_site[cell_number], sites, font=self.font, fill=(25, 0, 200))
+        sites_text = texts.sites_text()
+        self.draw.text(dict_xy_site[cell_number], sites_text, font=self.font, fill=(25, 0, 200))
 
     def draw_text_pay_or_on_center_pager(self, cell):
         self.change_font(self.font_bold, font_size=40)
@@ -190,18 +161,17 @@ class draw_page(object):
             dict_xy = positions.qr()
             summ = str(int(summ) * 100)
             qr_image = qrcode.QRCode(version=1,
-                                          error_correction=qrcode.ERROR_CORRECT_H,
-                                          box_size=5,
-                                          border=1)
-            qr_image.add_data("""ST00012|Name=ООО «Объемный мир»|PersonalAcc=40702810631000007404|BankName=ПАОСБЕРБАНК|BIC=040407627|CorrespAcc=30101810800000000627|PayeeINN=2464105021|KPP=246001001|PersAcc=""" + persacc + """|Sum=""" + summ)
+                                     error_correction=qrcode.ERROR_CORRECT_H,
+                                     box_size=5,
+                                     border=1)
+            qr_image.add_data(texts.data_qr(persacc, summ))
             self.page.paste(qr_image.make_image(fill_color="black", back_color="white"), dict_xy[cell])
 
     def add_text_above_qr(self, cell):
         self.change_font(self.font_regular, font_size=30)
         dict_xy = positions.text_above_qr()
-        text_over_qr = "Через Сбербанк онлайн по \n" \
-                       "QR-коду (быстрая оплата)"
-        self.draw.text(dict_xy[cell], text_over_qr, font=self.font, fill=(0, 0, 0))
+        text_above_qr = texts.text_above_qr()
+        self.draw.text(dict_xy[cell], text_above_qr, font=self.font, fill=(0, 0, 0))
 
     def save_page(self, object_name, object_path):
         # Добавляем страницу в pdf файл, если файла нет, создаем его
