@@ -52,9 +52,7 @@ def search_file_with_extension(file_extension, folder=""):
 
 
 def get_species_from_filename(splited_filename):
-    species = get_position_parametr(splited_filename, 0)
-    if species is None:
-        return ''
+    species = get_position_parametr(splited_filename, 0, '')
     if species == "о":
         species = "объемная"
     elif species == "п":
@@ -65,9 +63,7 @@ def get_species_from_filename(splited_filename):
 
 
 def get_proportion_from_filename(splited_filename):
-    proportions = get_position_parametr(splited_filename, 1)
-    if proportions is None:
-        return '0x0'
+    proportions = get_position_parametr(splited_filename, 1, '0x0')
     if "Кружка" in proportions:
         proportions = "Кружка-термос"
     if "Настенный кален" in proportions:
@@ -76,52 +72,35 @@ def get_proportion_from_filename(splited_filename):
 
 
 def get_template_from_file_name(splited_filename):
-    template = get_position_parametr(splited_filename, 2)
-    if template is None:
-        return '0000'
-    return template
+    return get_position_parametr(splited_filename, 2, '0000')
 
 
 def get_photo_from_file_name(splited_filename):
-    photo = get_position_parametr(splited_filename, 3)
-    if photo is None:
-        return '0000'
-    return photo
+    return get_position_parametr(splited_filename, 3, '0000')
 
 
 def get_number_from_file_name(splited_filename):
-    number = get_position_parametr(splited_filename, 4)
-    if number is None:
-        return '0000'
+    number = get_position_parametr(splited_filename, 4, '')
     if "[" in number:
         number = number[1:-1]
     return number
 
 
 def get_id_client_from_file_name(splited_filename):
-    id_client = get_position_parametr(splited_filename, 11)
-    if id_client is None:
-        return ''
-    return id_client
+    return get_position_parametr(splited_filename, 11, '')
 
 
 def get_last_name_from_file_name(splited_filename):
-    last_name = get_position_parametr(splited_filename, 9)
-    if last_name is None:
-        return '0'
-    return last_name
+    return get_position_parametr(splited_filename, 9, '')
 
 
 def get_cost_from_file_name(splited_filename):
-    cost = get_position_parametr(splited_filename, 8)
-    if cost is None:
-        return '0'
-    return cost
+    return get_position_parametr(splited_filename, 8, '0')
 
 
-def get_position_parametr(splited_filename, position_number):
+def get_position_parametr(splited_filename, position_number, default_value=''):
     if (len(splited_filename) - 1) < position_number:
-        return None
+        return default_value
     return splited_filename[position_number]
 
 
