@@ -140,8 +140,8 @@ class Previewer(QThread):
                     cell += 1
                     count += 1
                     if cell == 1:
-                        page = draw_page.draw_page(self.settings['font_regular'], self.settings['font_bold'],
-                                                   self.settings['font_italic'])
+                        page = draw_page.Page(self.settings['font_regular'], self.settings['font_bold'],
+                                              self.settings['font_italic'])
                         page.draw_name_object(self.settings['object_name'])
                         page.draw_of_klass(key)
                     page.draw_information_of_photo(cell, file_name, self.settings, image)

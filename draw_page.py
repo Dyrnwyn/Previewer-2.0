@@ -3,9 +3,10 @@ import positions
 from PIL import Image, ImageDraw, ImageFont
 from os import sep
 import texts
-from static_method import get_species_from_filename, get_proportion_from_filename
+from static_method import get_parametrs_from_file_name
 
-class draw_page(object):
+
+class Page(object):
     """docstring for draw_page"""
 
     def __init__(self, font_regular, font_bold, font_italic):
@@ -35,28 +36,20 @@ class draw_page(object):
 
     def draw_information_of_photo(self, cell, file_name, settings, image):
         self.add_img(cell, image, settings)
-        splited_filename = file_name.split("_")
-        species = get_species_from_filename(splited_filename)
-        proportions = get_proportion_from_filename(splited_filename)
-        template = splited_filename[2]
-        photo = splited_filename[3]
-        number = splited_filename[4]
-        if "[" in number:
-            number = number[1:-1]
-        parameters = ("Вид: " + species + "\n" +
-                      "Размер: " + proportions + "\n" +
-                      "Шаблон: " + template + "\n" +
-                      "Фото: " + photo + "\n" +
-                      "Кол-во:" + number + "\n"
+        photo_parametrs = get_parametrs_from_file_name(file_name)
+        parameters = ("Вид: " + photo_parametrs['species'] + "\n" +
+                      "Размер: " + photo_parametrs['proportions'] + "\n" +
+                      "Шаблон: " + photo_parametrs['template'] + "\n" +
+                      "Фото: " + photo_parametrs['photo'] + "\n" +
+                      "Кол-во:" + photo_parametrs['number'] + "\n"
                       )
         if settings['with_price']:
-            cost = splited_filename[len(splited_filename) - 1].split(".")[0]
-            id_client = splited_filename[11]
-            last_name = splited_filename[9]
-            self.draw_preview_with_price(cell, parameters, cost, id_client, last_name)
+            self.draw_preview_with_price(cell, parameters,
+                                         photo_parametrs['cost'],
+                                         photo_parametrs['id_client'],
+                                         photo_parametrs['last_name'])
         else:
-            cost = splited_filename[8]
-            self.draw_preview_without_price(cell, parameters, settings, cost)
+            self.draw_preview_without_price(cell, parameters, settings, photo_parametrs['cost'])
 
     def draw_preview_without_price(self, cell, parameters, settings, cost):
         self.change_font(self.font_regular, font_size=45)
