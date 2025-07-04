@@ -6,6 +6,7 @@ def text_without_price():
                }
     return dict_xy
 
+
 def text_with_price():
     dict_xy = {1: (550, 1150),
                2: (1700, 1150),
@@ -13,6 +14,7 @@ def text_with_price():
                4: (1700, 2650)
                }
     return dict_xy
+
 
 def last_name():
     dict_xy = {1: (80, 400),
@@ -124,13 +126,13 @@ def img():
     return dict_xy
 
 
-def qr():
+def qr(cell):
     dict_xy = {1: (800, 1400),
                2: (2000, 1400),
                3: (800, 2930),
                4: (2000, 2930)
                }
-    return dict_xy
+    return dict_xy[cell]
 
 
 def text_above_qr():

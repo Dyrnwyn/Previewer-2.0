@@ -1,9 +1,13 @@
-import qrcode
-import positions
-from PIL import Image, ImageDraw, ImageFont
-from os import sep
-import texts
-from static_method import get_parametrs_from_file_name
+from os.path import join as joint_path
+
+from PIL.Image import new as new_page, Transpose, Image
+from PIL.ImageDraw import Draw
+from PIL.ImageFont import truetype as load_font
+from qrcode import ERROR_CORRECT_H
+from qrcode.main import QRCode
+
+from lib import positions, texts
+from lib.static_method import get_parametrs_from_file_name
 
 
 class Page(object):
@@ -14,14 +18,14 @@ class Page(object):
         self.font_regular = font_regular
         self.font_bold = font_bold
         self.font_italic = font_italic
-        self.page = Image.new("RGB", (2480, 3508), color=(255, 255, 255))
-        self.draw = ImageDraw.Draw(self.page, "RGB")
-        self.font = ImageFont.truetype(self.font_regular, 30)
+        self.page = new_page("RGB", (2480, 3508), color=(255, 255, 255))
+        self.draw = Draw(self.page, "RGB")
+        self.font = load_font(self.font_regular, 30)
         self.draw_line_page()
         self.draw_title()
 
     def change_font(self, font_name, font_size=40):
-        self.font = ImageFont.truetype(font_name, font_size)
+        self.font = load_font(font_name, font_size)
 
     def draw_line_page(self):  # Разметка страницы на ячейки
         # -------------horizontal line--------------------
@@ -34,16 +38,17 @@ class Page(object):
         self.draw.line([(60, 400), (60, 3448)], fill=0, width=5)
         self.draw.text((60, 40), "Class")
 
-    def draw_information_of_photo(self, cell, file_name, settings, image):
+    def draw_information_of_photo(self, cell, photo_parametrs, settings, image):
         self.add_img(cell, image, settings)
-        photo_parametrs = get_parametrs_from_file_name(file_name)
         parameters = ("Вид: " + photo_parametrs['species'] + "\n" +
                       "Размер: " + photo_parametrs['proportions'] + "\n" +
                       "Шаблон: " + photo_parametrs['template'] + "\n" +
                       "Фото: " + photo_parametrs['photo'] + "\n" +
                       "Кол-во:" + photo_parametrs['number'] + "\n"
                       )
-        if settings['with_price']:
+        if settings.with_price:
+            if photo_parametrs['id_client'] != "":
+                pass
             self.draw_preview_with_price(cell, parameters,
                                          photo_parametrs['cost'],
                                          photo_parametrs['id_client'],
@@ -119,7 +124,7 @@ class Page(object):
 
     def draw_bottom_text(self, cell, settings):
         dict_xy = positions.bottom_text_without_id()
-        self.draw.text(dict_xy[cell], settings['bottom_text'], font=self.font, fill=(0, 0, 255))
+        self.draw.text(dict_xy[cell], settings.bottom_text, font=self.font, fill=(0, 0, 255))
 
     def draw_sites(self, cell_number):
         self.change_font(self.font_regular, font_size=30)
@@ -144,21 +149,24 @@ class Page(object):
     def add_img(self, cell, img, settings):
         # метод вывода фото изделия в ячейки
         dict_xy = positions.img()
-        if img.height > img.width and settings['with_price']:
-            img = img.transpose(method=Image.ROTATE_90)
+        if img.height > img.width and settings.with_price:
+            img = img.transpose(method=Transpose.ROTATE_90)
         self.page.paste(img, dict_xy[cell])
 
     def add_qr(self, cell, summ, persacc):
         if persacc != '' or summ != '' or persacc != ' ' or summ != ' ':
             self.add_text_above_qr(cell)
-            dict_xy = positions.qr()
+            if not isinstance(summ, int):
+                summ = 0
             summ = str(int(summ) * 100)
-            qr_image = qrcode.QRCode(version=1,
-                                     error_correction=qrcode.ERROR_CORRECT_H,
-                                     box_size=5,
-                                     border=1)
-            qr_image.add_data(texts.data_qr(persacc, summ))
-            self.page.paste(qr_image.make_image(fill_color="black", back_color="white"), dict_xy[cell])
+            dict_xy = positions.qr(cell)
+            qr_code = QRCode(version=1, error_correction=ERROR_CORRECT_H, box_size=5, border=1)
+            qr_code.add_data(texts.data_qr(persacc, summ))
+            qr_image = qr_code.make_image()
+            box = (dict_xy[0], dict_xy[1])
+            if not isinstance(qr_image, Image):
+                qr_image = qr_image.convert()
+            self.page.paste(qr_image, box)
 
     def add_text_above_qr(self, cell):
         self.change_font(self.font_regular, font_size=30)
@@ -168,10 +176,11 @@ class Page(object):
 
     def save_page(self, object_name, object_path):
         # Добавляем страницу в pdf файл, если файла нет, создаем его
+        object_name_with_ext = '{0}{1}'.format(object_name, ".pdf")
         try:
-            self.page.save('{0}{1}{2}'.format(object_path, sep, object_name) + ".pdf", append=True, resolution=300)
+            self.page.save(joint_path(object_path, object_name_with_ext) , append=True, resolution=300)
         except FileNotFoundError:
-            self.page.save('{0}{1}{2}'.format(object_path, sep, object_name) + ".pdf", resolution=300)
+            self.page.save(joint_path(object_path, object_name_with_ext), resolution=300)
         except PermissionError as e:
             fl_object = open("pypreviewer_err.txt", "w")
             fl_object.write(e)

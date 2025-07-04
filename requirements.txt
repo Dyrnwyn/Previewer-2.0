@@ -1,4 +1,5 @@
-PyQt5~=5.15.10
-openpyxl~=3.2.0b1
-qrcode~=7.4.2
-pillow~=10.2.0
+openpyxl~=3.1.5
+qrcode~=8.0.0
+pillow~=11.0.0
+PyQt5~=5.15.11
+PyQt6~=6.7.1

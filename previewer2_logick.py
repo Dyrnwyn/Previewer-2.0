@@ -1,64 +1,111 @@
 import logging
-import draw_page
-from static_method import get_file_sizes, search_file_with_extension
-from PyQt5.QtCore import QThread, pyqtSignal
-from os import path, remove, sep
+from os import remove, walk as os_walk
+from os.path import join as joint_path, exists as path_exist
+
+from PIL.Image import open as open_image
+from PyQt6.QtCore import QThread, pyqtSignal
 from psd_tools import PSDImage
-from PIL.Image import BICUBIC
-from PIL import Image
+
+from lib import draw_page
+from lib.holst import get_prepared_files_for_holst_preview
+from lib.static_method import get_file_sizes, get_list_of_psd_files, get_list_of_pdf_files, \
+    get_parametrs_from_file_name, save_file
 
 
 class Previewer(QThread):
-    settings = {}
-    files_for_preview = {}
-    dict_of_class = {"Класс": [], }
     what_in_work = pyqtSignal(str)
     missed_files = pyqtSignal(str)
-    missed_files_msg = "Ошибка при обработке: {0}\n"
     progress_bar_percent = pyqtSignal(int)
     progress_bar_maximum = pyqtSignal(int)
+    compose_result = pyqtSignal(dict)
     logging.basicConfig(filename='previewer.log', filemode='w', format='%(asctime)s - %(levelname)s: %(message)s',
                         level=logging.INFO)
 
-    def __init__(self):
-        QThread.__init__(self)
+    def __init__(self, parent, settings, object_name, object_path):
+        super().__init__(parent=parent)
+        self.object_name = object_name
+        self.object_path = object_path
+        self.psd_files = []
+        # self.holst_files = []
+        self.settings = settings
+        self.files_for_preview = {}
+        self.dict_of_class = {"Класс": [], }
+        self.missed_files_msg = "Ошибка при обработке: {0}\n"
 
     def run(self):
+        if self.settings.convert:
+            for root, dirs, files in os_walk(self.object_path):
+                self.psd_files = get_list_of_psd_files(root)
+                self.convert_psd(False)
+                save_file(root, self.files_for_preview)
+            return
+        if not self.check_data_to_compose_preview():
+            return
         self.remove_old_pdf()
-        if self.settings['holst']:
-            self.convert_jpg()
+        self.compose_preview()
+        self.compose_result.emit(self.get_compose_result("Завершение формирования",
+                                                         "Превью успешно сформировано"))
+
+    def stop_thread(self, title_text, msg):
+        self.compose_result.emit(self.get_compose_result(title_text, msg))
+        self.quit()
+
+
+    def compose_preview(self):
+        if self.settings.holst:
+            holst_files = get_prepared_files_for_holst_preview(self.object_path, self.settings.holst_files_subdir)
+            self.convert_jpg(holst_files)
         else:
+            self.psd_files = get_list_of_psd_files(self.object_path)
             self.convert_psd()
         self.create_dict_of_class()
         self.sort_dictionary()
         self.generate_pdf()
 
-    def set_var(self, settings):
-        self.settings = settings
+    @staticmethod
+    def get_compose_result(title_text, msg):
+        result_dict = {"title_text": title_text, "msg": msg}
+        return result_dict
 
-    def convert_psd(self):
-        self.initialize_progress_bar(len(self.settings['psd_files']))
+    def check_data_to_compose_preview(self):
+        if not self.object_path:
+            self.stop_thread("Ошибка", "Не выбрана папка с объектом")
+            return False
+        if not self.object_name:
+            self.stop_thread("Ошибка", "Необходимо указать имя объект")
+            return False
+        if not self.check_font():
+            return False
+        return True
+
+    def convert_psd(self, resize=True):
+        self.initialize_progress_bar(len(self.psd_files))
         count = 0
-        for psd_file_name in self.settings['psd_files']:
-            abs_path = path.join(self.settings['path'], psd_file_name)
+        for psd_file_name in self.psd_files:
+            abs_path = joint_path(self.object_path, psd_file_name)
             img_file = self.open_image_file(psd_file_name, abs_path, True)
             if img_file is None:
                 continue
-            width, height = get_file_sizes(img_file)
-            self.files_for_preview[psd_file_name[0:-4] + ".jpeg"] = img_file.resize((width, height), BICUBIC)
+            if resize:
+                width, height = get_file_sizes(img_file)
+                img_file = img_file.resize((width, height))
+            self.add_file_to_files_for_preview(psd_file_name, img_file)
             count += 1
             self.set_new_value_of_progress_bar(count)
 
-    def convert_jpg(self):
-        self.initialize_progress_bar(len(self.settings['holst_files']))
+    def add_file_to_files_for_preview(self, psd_file_name, img_file):
+        self.files_for_preview['{0}{1}'.format(psd_file_name[0:-4], ".jpeg")] = img_file
+
+    def convert_jpg(self, holst_files):
+        self.initialize_progress_bar(len(holst_files))
         count = 0
-        for jpg_file_name in self.settings['holst_files']:
-            abs_path = path.join(self.settings['path'], self.settings['holst_files_subdir'], jpg_file_name)
+        for jpg_file_name in holst_files:
+            abs_path = joint_path(self.object_path, self.settings.holst_files_subdir, jpg_file_name)
             img_file = self.open_image_file(jpg_file_name, abs_path)
             if img_file is None:
                 continue
             width, height = get_file_sizes(img_file)
-            self.files_for_preview[jpg_file_name[0:-4] + ".jpeg"] = img_file.resize((width, height), BICUBIC)
+            self.files_for_preview[jpg_file_name[0:-4] + ".jpeg"] = img_file.resize((width, height))
             count += 1
             self.set_new_value_of_progress_bar(count)
 
@@ -66,12 +113,12 @@ class Previewer(QThread):
         log_message = "Обрабатываю файл: {0}".format(img_file_name)
         self.set_what_in_work(log_message)
         logging.info(log_message)
-        if path.exists(abs_path):
+        if path_exist(abs_path):
             try:
                 if is_psd:
                     psd = PSDImage.open(abs_path)
                 else:
-                    img = Image.open(abs_path)
+                    img = open_image(abs_path)
                     return img
             except Exception:
                 self.output_error("Не удалось открыть файл: {0}".format(img_file_name))
@@ -80,7 +127,7 @@ class Previewer(QThread):
             self.output_error("Не удалось найти файл: {0}".format(img_file_name))
             return None
         try:
-            # self.set_what_in_work("Конвертирую файл: {0}".format(img_file_name))
+            self.set_what_in_work("Конвертирую файл: {0}".format(img_file_name))
             rgb_png = psd.composite().convert("RGB")
             return rgb_png
         except Exception as E:
@@ -126,11 +173,10 @@ class Previewer(QThread):
             else:
                 self.dict_of_class[i[5]].append({file_name: self.files_for_preview[file_name]})
 
-
     def generate_pdf(self):
-        self.progress_bar_percent.emit(0)
-        self.progress_bar_maximum.emit(len(self.files_for_preview))
+        self.initialize_progress_bar(len(self.files_for_preview))
         count_for_pb = 0
+        page = None
         for key, val in self.dict_of_class.items():
             cell = 0
             count = 0
@@ -140,22 +186,39 @@ class Previewer(QThread):
                     cell += 1
                     count += 1
                     if cell == 1:
-                        page = draw_page.Page(self.settings['font_regular'], self.settings['font_bold'],
-                                              self.settings['font_italic'])
-                        page.draw_name_object(self.settings['object_name'])
+                        page = draw_page.Page(self.settings.font_regular,
+                                              self.settings.font_bold,
+                                              self.settings.font_italic)
+
+                        page.draw_name_object(self.object_name)
                         page.draw_of_klass(key)
-                    page.draw_information_of_photo(cell, file_name, self.settings, image)
+                    photo_parametrs = get_parametrs_from_file_name(file_name)
+                    if self.settings.with_price:
+                        if photo_parametrs['id_client'] == "":
+                            self.output_error((self.missed_files_msg + ": не указан ID клиента\n").format(file_name))
+                        if photo_parametrs['cost'] == "":
+                            self.output_error((self.missed_files_msg + ": не указана стоимость изделия\n").format(file_name))
+                    page.draw_information_of_photo(cell, photo_parametrs, self.settings, image)
                     count_for_pb += 1
                     self.progress_bar_percent.emit(count_for_pb)
                     if cell == 4 or count == len(val):
-                        page.save_page(self.settings['object_name'], self.settings['path'])
+                        page.save_page(self.object_name, self.object_path)
                         # page.__init__()
                         cell = 0
 
     def remove_old_pdf(self):
         self.set_what_in_work("Удаляю старое превью")
-        pdf_files = search_file_with_extension("pdf", self.settings['path'])
-        pdf_file_name = self.settings['object_name'] + ".pdf"
+        pdf_files = get_list_of_pdf_files(self.object_path)
+        pdf_file_name = self.object_name + ".pdf"
         if pdf_file_name in pdf_files:
-            logging.info("Удаление старого превью: {0}{1}{2}".format(self.settings['path'], sep, pdf_file_name))
-            remove(path.join(self.settings['path'], pdf_file_name))
+            full_filename = joint_path(self.object_path, pdf_file_name)
+            logging.info("Удаление старого превью: {0}".format(full_filename))
+            remove(full_filename)
+
+    def check_font(self):
+        fonts = [self.settings.font_regular, self.settings.font_bold, self.settings.font_italic]
+        for font in fonts:
+            if not path_exist(font):
+                self.stop_thread("Ошибка", "Не удалось обнаружить шрифт по указанному пути: {0}".format(font))
+                return False
+        return True
