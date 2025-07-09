@@ -1,7 +1,10 @@
 import os.path
 from os import scandir
+
+import psd_tools.api.layers
 from PyQt6.QtWidgets import QMessageBox
 from os import path, mkdir
+from psd_tools import PSDImage
 
 
 def get_parametrs_from_file_name(file_name):
@@ -171,6 +174,29 @@ def find_files_for_preview(with_price, path_for_searching):
 def create_dir(creating_path):
     if not path.exists(creating_path):
         mkdir(creating_path)
+
+def get_layers_name_from_psd(full_name):
+    psd_img = PSDImage.open(full_name)
+    layer_list = []
+    for layer in psd_img:
+        layer_dict = {layer.name: layer}
+        layer_list.append(layer_dict)
+    return layer_list
+
+def replace_layer_in_psd_file(work_path, psd_file_name, psd_layer):
+    psd_files = get_list_of_psd_files(work_path)
+    for psd_file in psd_files:
+        if psd_file_name != psd_file:
+            psd_img = PSDImage.open(os.path.join(work_path, psd_file))
+            for layer in psd_img:
+                if layer.name == psd_layer.name:
+                    layer_index = psd_img.index(layer)
+                    psd_img.remove(layer)
+                    psd_img.insert(layer_index, psd_layer)
+                    psd_img.save(os.path.join(work_path, psd_file + "_copy"))
+                    break
+
+
 
 
 

@@ -7,7 +7,7 @@ from lib.static_method import show_message_box
 class PreviewerSettings(object):
     __slots__ =[
                 "font_italic", "species", "format", "template", "photo", "number", "school_class", "last_name",
-                "id", "summ", "holst", "with_price", "convert", "font_regular", "font_bold", "holst_files_subdir",
+                "id", "summ", "holst", "with_price", "font_regular", "font_bold", "holst_files_subdir",
                 "text_for_qr", "qr_error_correct", "bottom_text"
                 ]
 
@@ -23,7 +23,6 @@ class PreviewerSettings(object):
         self.summ: int = 0
         self.holst: bool = False
         self.with_price: bool = False
-        self.convert: bool = False
         self.font_regular: str = ""
         self.font_bold: str = ""
         self.font_italic: str = ""
@@ -94,7 +93,6 @@ class PreviewerSettings(object):
             'summ': 12,
             'holst': False,
             'with_price': False,
-            'convert': False,
             'font_regular': self.get_font_path() + 'afuturica.ttf',
             'font_bold': self.get_font_path() + 'afuturicaextrabold.ttf',
             'font_italic': self.get_font_path() + 'afuturicaitalic.ttf',
@@ -117,7 +115,6 @@ class PreviewerSettings(object):
         self.id = dict_settings['id']
         self.summ = dict_settings['summ']
         self.holst = dict_settings['holst']
-        self.convert = dict_settings['convert']
         self.with_price = dict_settings['with_price']
         self.font_regular = dict_settings['font_regular']
         self.font_bold = dict_settings['font_bold']
@@ -139,7 +136,6 @@ class PreviewerSettings(object):
         dict_settings['id'] = self.id
         dict_settings['summ'] = self.summ
         dict_settings['holst'] = self.holst
-        dict_settings['convert'] = self.convert
         dict_settings['with_price'] = self.with_price
         dict_settings['font_regular'] = self.font_regular
         dict_settings['font_bold'] = self.font_bold

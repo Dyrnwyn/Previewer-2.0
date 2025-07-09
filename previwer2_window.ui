@@ -47,7 +47,7 @@
    <property name="locale">
     <locale language="Russian" country="Russia"/>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_7">
+   <layout class="QVBoxLayout" name="verticalLayout_9">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
@@ -79,6 +79,9 @@
         <width>0</width>
         <height>0</height>
        </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -248,13 +251,6 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="checkBox_convert">
-              <property name="text">
-               <string>Конвертация</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QCheckBox" name="checkBox_holst">
               <property name="text">
                <string>Холсты</string>
@@ -342,6 +338,125 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_psd">
+       <attribute name="title">
+        <string>PSD</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,0,0">
+          <property name="sizeConstraint">
+           <enum>QLayout::SizeConstraint::SetFixedSize</enum>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>Директория: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineEdit_path_to_psd"/>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolButton_pickup_dir">
+            <property name="text">
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Файл psd:      </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineEdit_psd_file"/>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolButton_select_psd_file">
+            <property name="text">
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_12">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>12</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Выберите слой который необходимо изменить в файлах:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_layers"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGraphicsView" name="graphicsView_view_layer">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>175</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_12">
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="pushButton_change_layer_in_files">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(248, 228, 92);</string>
+            </property>
+            <property name="text">
+             <string>Заменить слой в файлах</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_convert_psd">
+            <property name="layoutDirection">
+             <enum>Qt::LayoutDirection::LeftToRight</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">
+background-color: rgb(255, 163, 72);</string>
+            </property>
+            <property name="text">
+             <string>Конвертировать</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="tab_settings">
        <attribute name="title">
         <string>Настройки</string>
@@ -359,14 +474,14 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="page_data_position">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>294</width>
+             <width>446</width>
              <height>116</height>
             </rect>
            </property>
@@ -825,7 +940,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>446</width>
+             <width>162</width>
              <height>117</height>
             </rect>
            </property>

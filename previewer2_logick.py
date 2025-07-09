@@ -1,5 +1,5 @@
 import logging
-from os import remove, walk as os_walk
+from os import remove
 from os.path import join as joint_path, exists as path_exist
 
 from PIL.Image import open as open_image
@@ -9,7 +9,7 @@ from psd_tools import PSDImage
 from lib import draw_page
 from lib.holst import get_prepared_files_for_holst_preview
 from lib.static_method import get_file_sizes, get_list_of_psd_files, get_list_of_pdf_files, \
-    get_parametrs_from_file_name, save_file
+    get_parametrs_from_file_name
 
 
 class Previewer(QThread):
@@ -33,12 +33,6 @@ class Previewer(QThread):
         self.missed_files_msg = "Ошибка при обработке: {0}\n"
 
     def run(self):
-        if self.settings.convert:
-            for root, dirs, files in os_walk(self.object_path):
-                self.psd_files = get_list_of_psd_files(root)
-                self.convert_psd(False)
-                save_file(root, self.files_for_preview)
-            return
         if not self.check_data_to_compose_preview():
             return
         self.remove_old_pdf()
