@@ -183,18 +183,36 @@ def get_layers_name_from_psd(full_name):
         layer_list.append(layer_dict)
     return layer_list
 
-def replace_layer_in_psd_file(work_path, psd_file_name, psd_layer):
+def replace_layer_in_psd_file(work_path, psd_file_name, psd_layer, previous_layer):
+    files_without_layer = []
     psd_files = get_list_of_psd_files(work_path)
     for psd_file in psd_files:
         if psd_file_name != psd_file:
             psd_img = PSDImage.open(os.path.join(work_path, psd_file))
+            layer_replaced = False
             for layer in psd_img:
                 if layer.name == psd_layer.name:
                     layer_index = psd_img.index(layer)
                     psd_img.remove(layer)
                     psd_img.insert(layer_index, psd_layer)
                     psd_img.save(os.path.join(work_path, psd_file + "_copy"))
+                    layer_replaced = True
                     break
+            if not layer_replaced and previous_layer is not None:
+                for cur_prev_layer in psd_img:
+                    if cur_prev_layer.name == previous_layer.name:
+                        layer_index = psd_img.index(cur_prev_layer)
+                        psd_img.insert(layer_index + 1, psd_layer)
+                        psd_img.save(os.path.join(work_path, psd_file + "_copy"))
+                        layer_replaced = True
+                        break
+            if not layer_replaced:
+                psd_img.insert(0, psd_layer)
+                psd_img.save(os.path.join(work_path, psd_file + "_copy"))
+                files_without_layer.append(os.path.join(work_path, psd_file))
+    return files_without_layer
+
+
 
 
 

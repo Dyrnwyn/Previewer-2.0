@@ -121,7 +121,8 @@ class MainApp(QMainWindow, Ui_MainWindow, QObject):
     def psd_worker(self, convert=False, replace_layer=False):
         converter_thread = PSDWorker(self, self.lineEdit_path_to_psd.text(), self.lineEdit_psd_file.text(),
                                      convert, replace_layer,
-                                     self.comboBox_layers.itemData(self.comboBox_layers.currentIndex()))
+                                     self.comboBox_layers.itemData(self.comboBox_layers.currentIndex()),
+                                     self.comboBox_layers.itemData(self.comboBox_layers.currentIndex() - 1))
         converter_thread.started.connect(self.on_start_previewer)
         converter_thread.finished.connect(self.on_finish_previewer)
         converter_thread.compose_result.connect(self.msg_compose_result)
