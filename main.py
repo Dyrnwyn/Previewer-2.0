@@ -185,7 +185,8 @@ class MainApp(QMainWindow, Ui_MainWindow, QObject):
         if not selected_file[0] == '':
             head, tail = path_split(selected_file[0])
             self.lineEdit_psd_file.setText(tail)
-            self.lineEdit_path_to_psd.setText(head)
+            if self.lineEdit_path_to_psd.text() == '':
+                self.lineEdit_path_to_psd.setText(head)
             self.get_layers(head, tail)
 
     def get_layers(self, work_path, filename):
@@ -237,9 +238,11 @@ class MainApp(QMainWindow, Ui_MainWindow, QObject):
     def output_image(self):
         scene = QGraphicsScene(0, 0, 400, 150)
         layer = self.comboBox_layers.itemData(self.comboBox_layers.currentIndex())
-        qt_image = ImageQt(layer.composite().resize([300,150]))
-        scene.addItem(QGraphicsPixmapItem(QPixmap(QImage(qt_image))))
-        self.graphicsView_view_layer.setScene(scene)
+        if layer is not None:
+            layer.visible = True
+            qt_image = ImageQt(layer.composite().resize([300,150]))
+            scene.addItem(QGraphicsPixmapItem(QPixmap(QImage(qt_image))))
+            self.graphicsView_view_layer.setScene(scene)
 
 def main():
     app = QApplication(argv)

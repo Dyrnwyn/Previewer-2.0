@@ -179,9 +179,15 @@ def get_layers_name_from_psd(full_name):
     psd_img = PSDImage.open(full_name)
     layer_list = []
     for layer in psd_img:
-        layer_dict = {layer.name: layer}
+        layer_name = layer.name
+        if layer.kind == 'group':
+            layer_name += " - группа"
+        layer_dict = {layer_name: layer}
         layer_list.append(layer_dict)
     return layer_list
+
+def save_psd_file(psd_img, work_path, psd_file_name):
+    psd_img.save(os.path.join(work_path, psd_file_name))
 
 def replace_layer_in_psd_file(work_path, psd_file_name, psd_layer, previous_layer):
     files_without_layer = []
@@ -192,10 +198,11 @@ def replace_layer_in_psd_file(work_path, psd_file_name, psd_layer, previous_laye
             layer_replaced = False
             for layer in psd_img:
                 if layer.name == psd_layer.name:
+                    psd_layer.visible = layer.visible
                     layer_index = psd_img.index(layer)
                     psd_img.remove(layer)
                     psd_img.insert(layer_index, psd_layer)
-                    psd_img.save(os.path.join(work_path, psd_file + "_copy"))
+                    save_psd_file(psd_img, work_path, psd_file)
                     layer_replaced = True
                     break
             if not layer_replaced and previous_layer is not None:
@@ -203,14 +210,15 @@ def replace_layer_in_psd_file(work_path, psd_file_name, psd_layer, previous_laye
                     if cur_prev_layer.name == previous_layer.name:
                         layer_index = psd_img.index(cur_prev_layer)
                         psd_img.insert(layer_index + 1, psd_layer)
-                        psd_img.save(os.path.join(work_path, psd_file + "_copy"))
+                        save_psd_file(psd_img, work_path, psd_file)
                         layer_replaced = True
                         break
             if not layer_replaced:
                 psd_img.insert(0, psd_layer)
-                psd_img.save(os.path.join(work_path, psd_file + "_copy"))
+                save_psd_file(psd_img, work_path, psd_file)
                 files_without_layer.append(os.path.join(work_path, psd_file))
     return files_without_layer
+
 
 
 
