@@ -26,6 +26,7 @@ class MainApp(QMainWindow, Ui_MainWindow, QObject):
 
         self.progressBar.setValue(0)
         self.progressBar.setVisible(False)
+
         self.label_what_in_work.setVisible(False)
 
         self.checkBox_holst.clicked.connect(self.holst_check_choice)
